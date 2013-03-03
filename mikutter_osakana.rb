@@ -7,6 +7,7 @@ class Account
   end
 
   def load_status
+    exp = nil
     @level = LazyLevel.from(exp)
   end
 
