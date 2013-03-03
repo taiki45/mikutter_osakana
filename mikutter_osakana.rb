@@ -2,17 +2,25 @@
 require 'pry'
 
 class Account
+  attr_reader :level
+
   def initialize
-    load_status
+    @level = load_status
   end
 
   def load_status
-    exp = nil
-    @level = LazyLevel.from(exp)
+    exp = open(save_file).read.chomp.to_i
+    LazyLevel.from(exp)
   end
 
   def save
-    @level.to_i
+    open(save_file, 'w') {|f| f.write @level.exp }
+  end
+
+  def save_file
+    dst = File.expand_path('../exp', __FILE__)
+    open(dst, 'w') {|f| f.write '0' } unless File.exist? dst
+    dst
   end
 
   def increase(event)
@@ -20,6 +28,19 @@ class Account
   end
 
   def on_post
+    @level.add rand(100..300)
+  end
+
+  def on_fav
+    @level.add rand(10..50)
+  end
+
+  def on_faved
+    @level.add 10
+  end
+
+  def on_apper
+    @level.add 1
   end
 
   class LazyLevel
@@ -85,7 +106,8 @@ end
 
 Plugin.create :mikutter_osakana do
   aa = open(File.expand_path('../aa.text', __FILE__)).read.chomp
-  account = Account.new
+  pattern = Regexp.new(Regexp.escape(aa))
+  me = Account.new
 
   command(
     :osakana_tweet,
@@ -101,8 +123,23 @@ Plugin.create :mikutter_osakana do
 
   filter_gui_postbox_post do |box|
     buff = Plugin.create(:gtk).widgetof(box).widget_post.buffer
-    if buff.text =~ Regexp.new(Regexp.escape(aa))
-      account.increase :post
+    me.increase :post if buff.text =~ pattern
+    [box]
+  end
+
+  on_favorite do |service, user, msg|
+    me.increase :fav if msg.to_s =~ pattern
+    [service, user, msg]
+  end
+
+  on_update do |service, msgs|
+    msgs.each do |msg|
+      me.increase :apper if msg.to_s =~ pattern
     end
+    [service, msgs]
+  end
+
+  on_period do
+    me.save
   end
 end
