@@ -7,11 +7,16 @@ class Account
   end
 
   def load_status
+    exp = open(save_file).read.chomp
     @level = LazyLevel.from(exp)
   end
 
   def save
-    @level.to_i
+    open(save_file, 'w') {|f| f.write @level.exp }
+  end
+
+  def save_file
+    @sf ||= File.expand_path '../exp', __FILE__
   end
 
   def increase(event)
