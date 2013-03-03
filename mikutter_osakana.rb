@@ -9,7 +9,8 @@ class Account
   end
 
   def load_status
-    LazyLevel.from(open(save_file).read.chomp)
+    exp = open(save_file).read.chomp.to_i
+    LazyLevel.from(exp)
   end
 
   def save
@@ -17,7 +18,9 @@ class Account
   end
 
   def save_file
-    @sf ||= File.expand_path '../exp', __FILE__
+    dst = File.expand_path('../exp', __FILE__)
+    open(dst, 'w') {|f| f.write '0' } unless File.exist? dst
+    dst
   end
 
   def increase(event)
@@ -104,7 +107,7 @@ end
 Plugin.create :mikutter_osakana do
   aa = open(File.expand_path('../aa.text', __FILE__)).read.chomp
   pattern = Regexp.new(Regexp.escape(aa))
-  user = Account.new
+  me = Account.new
 
   command(
     :osakana_tweet,
@@ -120,18 +123,23 @@ Plugin.create :mikutter_osakana do
 
   filter_gui_postbox_post do |box|
     buff = Plugin.create(:gtk).widgetof(box).widget_post.buffer
-    user.increase :post if buff.text =~ pattern
+    me.increase :post if buff.text =~ pattern
+    [box]
   end
 
   on_favorite do |service, user, msg|
-    user.increase :fav if msg.to_s =~ pattern
+    me.increase :fav if msg.to_s =~ pattern
+    [service, user, msg]
   end
 
-  on_update do |service, megs|
-    user.increase :apper if msg.to+s =~ pattern
+  on_update do |service, msgs|
+    msgs.each do |msg|
+      me.increase :apper if msg.to_s =~ pattern
+    end
+    [service, msgs]
   end
 
   on_period do
-    user.save
+    me.save
   end
 end
