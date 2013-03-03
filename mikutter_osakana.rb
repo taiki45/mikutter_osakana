@@ -36,6 +36,10 @@ class Account
     @level.add 10
   end
 
+  def on_apper
+    @level.add 1
+  end
+
   class LazyLevel
     class << self
       def from(exp)
@@ -99,7 +103,8 @@ end
 
 Plugin.create :mikutter_osakana do
   aa = open(File.expand_path('../aa.text', __FILE__)).read.chomp
-  account = Account.new
+  pattern = Regexp.new(Regexp.escape(aa))
+  user = Account.new
 
   command(
     :osakana_tweet,
@@ -115,8 +120,18 @@ Plugin.create :mikutter_osakana do
 
   filter_gui_postbox_post do |box|
     buff = Plugin.create(:gtk).widgetof(box).widget_post.buffer
-    if buff.text =~ Regexp.new(Regexp.escape(aa))
-      account.increase :post
-    end
+    user.increase :post if buff.text =~ pattern
+  end
+
+  on_favorite do |service, user, msg|
+    user.increase :fav if msg.to_s =~ pattern
+  end
+
+  on_update do |service, megs|
+    user.increase :apper if msg.to+s =~ pattern
+  end
+
+  on_period do
+    user.save
   end
 end
