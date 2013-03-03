@@ -2,13 +2,14 @@
 require 'pry'
 
 class Account
+  attr_reader :level
+
   def initialize
-    load_status
+    @level = load_status
   end
 
   def load_status
-    exp = open(save_file).read.chomp
-    @level = LazyLevel.from(exp)
+    LazyLevel.from(open(save_file).read.chomp)
   end
 
   def save
@@ -24,6 +25,15 @@ class Account
   end
 
   def on_post
+    @level.add rand(100..300)
+  end
+
+  def on_fav
+    @level.add rand(10..50)
+  end
+
+  def on_faved
+    @level.add 10
   end
 
   class LazyLevel
