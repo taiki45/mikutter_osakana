@@ -1,27 +1,17 @@
 # -*- coding: utf-8 -*-
 require 'pry'
 
-module Memoize
-  def memoize(*names)
-    names.each do |name|
-      target = instance_method(name)
-      wrapped = lambda do |arg|
-        @_cache_ ||= {}
-        @_cache_[name] ||= {}
-        @_cache_[name][arg] || @_cache_[name][arg] = target.bind(self).call(arg)
-      end
-      define_method name, &wrapped
-    end
-  end
-end
-
 class Account
   def initialize
     load_status
   end
 
   def load_status
-    @level = Level.new(exp)
+    @level = LazyLevel.from(exp)
+  end
+
+  def save
+    @level.to_i
   end
 
   def increase(event)
@@ -31,35 +21,63 @@ class Account
   def on_post
   end
 
-  class Level
-    extend Momeize
+  class LazyLevel
+    class << self
+      def from(exp)
+        level = thresholds.each_with_index do |e, i|
+          break i if e > exp
+        end
+        new(level, exp)
+      end
 
-    def initialize(exp)
-      @exp = exp
-      @level
+      def thresholds
+        i = 1
+        Enumerator.new do |y|
+          loop do
+            y << (1..i).map {|n| rate(n) }.reduce(:+)
+            i += 1
+          end
+        end
+      end
+
+      def rate(n)
+        n * Math.log(n * 100).to_i
+      end
+    end
+
+    attr_reader :level, :exp
+
+    def initialize(level, exp = nil)
+      @level = level
+      @exp = exp || thresholds.take(level).last
+    end
+
+    def thresholds
+      self.class.thresholds
     end
 
     def add(exp)
+      @exp += exp
     end
 
-    def next_threshold(next_level = self.next)
-      (1..next_level).map {|n| n * Math.log(n * 100).to_i }.reduce(&:+)
+    def force
+      self.class.from(@exp).level
     end
-
-    memoize :next_threshold
 
     def to_i
+      force
     end
 
     def to_s
+      force.to_s
     end
 
     def method_missing(name, *args)
-      @level.__send__(name, *args)
+      force.level.__send__(name, *args)
     end
 
     def respond_to_missing(name)
-      @level.respond_to_missing(name)
+      force.level.respond_to_missing(name)
     end
   end
 end
