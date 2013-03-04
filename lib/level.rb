@@ -13,7 +13,7 @@ module Osakana
 
     def initialize(level, exp = nil)
       @level = level
-      @exp = exp || ExpTable.thresholds_at(level)
+      @exp = exp || ExpTable.threshold_at(level)
     end
 
     def add(exp)
