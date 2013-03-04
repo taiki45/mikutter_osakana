@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-require 'pry'
 
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+
 require 'account'
 require 'level'
+
 
 module Osakana
   Plugin.create :mikutter_osakana do
