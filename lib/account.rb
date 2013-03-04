@@ -32,19 +32,19 @@ module Osakana
     end
 
     def on_post
-      @level.add rand(100..300)
+      @level.add rand(10..30)
     end
 
     def on_fav
-      @level.add rand(10..50)
+      @level.add rand(1..5)
     end
 
     def on_faved
-      @level.add 10
+      @level.add 5
     end
 
     def on_apper
-      @level.add 1
+      @level.add 10
     end
   end
 end

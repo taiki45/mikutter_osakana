@@ -31,7 +31,7 @@ module Osakana
       :osakana,
       name: 'osakana now',
       condition: Plugin::Command[:Editable],
-      visible: false,
+      visible: true,
       role: :postbox
     ) do |opt|
       buff = Plugin.create(:gtk).widgetof(opt.widget).widget_post.buffer

@@ -6,7 +6,7 @@ module Osakana
       level = ExpTable.to_enum.each_with_index do |e, i|
         break i if e > exp
       end
-      self.new level, exp
+      new level, exp
     end
 
     attr_reader :level, :exp
