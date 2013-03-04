@@ -11,7 +11,7 @@ module Osakana
 
     def load_status
       exp = open(save_file).read.chomp.to_i
-      Level.from(exp)
+      Level.from exp
     end
 
     def save
