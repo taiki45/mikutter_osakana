@@ -23,6 +23,10 @@ module Osakana
       dst
     end
 
+    def exp
+      level.exp
+    end
+
     def increase(event)
       __send__('on_' + event.to_s)
     end

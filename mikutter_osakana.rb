@@ -11,6 +11,10 @@ module Osakana
     pattern = Regexp.new(Regexp.escape(aa))
     me = Account.new
 
+    def tell(msg)
+      Plugin.call(:update, nil, [Message.new(message: msg, system: true)])
+    end
+
     command(
       :osakana_tweet,
       name: 'おさかなといっしょにつぶやく',
@@ -43,6 +47,7 @@ module Osakana
       role: :timeline
     ) do |opt|
       me.save
+      tell "saved. current status is level: #{me.level}, exp: #{me.exp}."
     end
 
     filter_gui_postbox_post do |box|
