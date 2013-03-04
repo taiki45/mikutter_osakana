@@ -29,7 +29,7 @@ module Osakana
 
     command(
       :osakana,
-      name: 'osakana now',
+      name: 'osakana now.',
       condition: Plugin::Command[:Editable],
       visible: true,
       role: :postbox
@@ -41,7 +41,7 @@ module Osakana
 
     command(
       :osakana_save,
-      name: 'save status',
+      name: 'save status.',
       condition: -> _ { true },
       visible: true,
       role: :timeline
