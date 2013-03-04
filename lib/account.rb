@@ -6,6 +6,7 @@ module Osakana
 
     def initialize
       @level = load_status
+      at_exit { save }
     end
 
     def load_status
