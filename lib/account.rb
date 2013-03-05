@@ -5,13 +5,12 @@ module Osakana
     attr_reader :level
 
     def initialize
-      @level = load_status
+      @level = Level.from load_status
       at_exit { save }
     end
 
     def load_status
-      exp = open(save_file).read.chomp.to_i
-      Level.from exp
+      open(save_file).read.chomp.to_i
     end
 
     def save
