@@ -41,8 +41,6 @@ module Osakana
     end
 
     module ExpTable
-      extend Enumerable
-
       class << self
         def cache
           @cache ||= []
