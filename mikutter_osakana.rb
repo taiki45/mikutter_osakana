@@ -11,6 +11,8 @@ module Osakana
     aa = open(File.expand_path('../aa.text', __FILE__)).read.chomp
     pattern = Regexp.new(Regexp.escape(aa))
     me = Account.new
+    on_save_do = -> level { Plugin.call(:osakana_saved, level) }
+    me.add_callback on: :save, do: on_save_do
 
     def tell(msg)
       Plugin.call(:update, nil, [Message.new(message: msg, system: true)])
@@ -71,6 +73,29 @@ module Osakana
 
     on_period do
       me.save
+    end
+
+
+    targets = (1..10).map {|i| i ** i }
+
+    targets.each_with_index do |target, index|
+      depend = index > 0 ? [] : ["osakana_level_#{targets[index - 1]}".to_sym]
+
+      defachievement(
+        "osakana_level_#{targets[index]}".to_sym,
+        description: "レベルをあげるでし",
+        hint: "おさかなといっしょにあそぼ…？",
+        depends: depend
+      ) do |ach|
+
+        on_osakana_saved do |level|
+          if level > target
+            activity :achievement, "レベル#{level}達成おめでとうでし"
+            ach.take!
+          end
+        end
+      end
+
     end
   end
 end

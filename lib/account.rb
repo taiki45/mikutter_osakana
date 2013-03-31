@@ -6,6 +6,7 @@ module Osakana
 
     def initialize
       @level = Level.from load_status
+      @call_backs = Hash.new {|hash, key| hash[key] = [] }
       at_exit { save }
     end
 
@@ -15,6 +16,7 @@ module Osakana
 
     def save
       open(save_file, 'w') {|f| f.write @level.exp }
+      @call_backs[:save].each {|proc| proc.call(@level.to_i) } if @call_backs[:save]
     end
 
     def save_file
@@ -30,6 +32,13 @@ module Osakana
     def increase(event)
       __send__('on_' + event.to_s)
     end
+
+    def add_callback(arg = {})
+      raise ArgumentError unless arg[:on] || arg[:do]
+      @call_backs[arg[:on]] << arg[:do]
+    end
+
+    private
 
     def on_post
       @level.add rand(10..30)
