@@ -76,10 +76,13 @@ module Osakana
     end
 
 
-    targets = (1..10).map {|i| i * i }
+    targets = (2..20).map {|i| i * i }
 
     targets.each_with_index do |target, index|
-      depend = index > 0 ? [] : ["osakana_level_#{targets[index - 1]}".to_sym]
+      depend = if index > 0
+               then []
+               else (0...index).map {|i| "osakana_level_#{targets[i]}".to_sym }
+               end
 
       defachievement(
         "osakana_level_#{target}".to_sym,
@@ -94,7 +97,7 @@ module Osakana
           end
         end
       end
-
     end
+
   end
 end
