@@ -11,8 +11,7 @@ module Osakana
     aa = open(File.expand_path('../aa.text', __FILE__)).read.chomp
     pattern = Regexp.new(Regexp.escape(aa))
     me = Account.new
-    on_save_do = -> level { Plugin.call(:osakana_saved, level) }
-    me.add_callback on: :save, do: on_save_do
+    me.add_callback on: :save, do: -> level { Plugin.call(:osakana_saved, level) }
 
     def tell(msg)
       Plugin.call(:update, nil, [Message.new(message: msg, system: true)])
