@@ -96,8 +96,8 @@ module Osakana
             ach.take!
           end
         end
+
       end
     end
-
   end
 end
