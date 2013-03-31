@@ -89,7 +89,7 @@ module Osakana
       ) do |ach|
 
         on_osakana_saved do |level|
-          if level > target
+          if level >= target
             activity :achievement, "レベル#{level}達成おめでとうでし"
             ach.take!
           end
