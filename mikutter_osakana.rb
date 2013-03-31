@@ -76,21 +76,20 @@ module Osakana
     end
 
 
-    targets = (1..10).map {|i| i ** i }
+    targets = (1..10).map {|i| i * i }
 
     targets.each_with_index do |target, index|
       depend = index > 0 ? [] : ["osakana_level_#{targets[index - 1]}".to_sym]
 
       defachievement(
-        "osakana_level_#{targets[index]}".to_sym,
+        "osakana_level_#{target}".to_sym,
         description: "レベルをあげるでし",
-        hint: "おさかなといっしょにあそぼ…？",
+        hint: "レベル#{target}をめざすでし",
         depends: depend
       ) do |ach|
 
         on_osakana_saved do |level|
           if level >= target
-            activity :achievement, "レベル#{level}達成おめでとうでし"
             ach.take!
           end
         end
