@@ -80,8 +80,8 @@ module Osakana
 
     targets.each_with_index do |target, index|
       depend = if index > 0
-               then []
-               else (0...index).map {|i| "osakana_level_#{targets[i]}".to_sym }
+               then (0...index).map {|i| "osakana_level_#{targets[i]}".to_sym }
+               else []
                end
 
       defachievement(
