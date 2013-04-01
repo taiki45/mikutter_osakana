@@ -20,6 +20,10 @@ module Osakana
       @exp += exp
     end
 
+    def reduce(exp)
+      @exp -= exp
+    end
+
     def force
       self.class.from @exp
     end

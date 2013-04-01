@@ -33,6 +33,10 @@ module Osakana
       __send__('on_' + event.to_s)
     end
 
+    def use
+      @level.reduce 50
+    end
+
     def add_callback(arg = {})
       raise ArgumentError unless arg[:on] || arg[:do]
       @call_backs[arg[:on]] << arg[:do]

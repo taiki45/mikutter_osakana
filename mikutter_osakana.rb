@@ -74,6 +74,10 @@ module Osakana
       me.save
     end
 
+    on_lacolaco do
+      me.use
+    end
+
 
     targets = (2..20).map {|i| i * i }
 
