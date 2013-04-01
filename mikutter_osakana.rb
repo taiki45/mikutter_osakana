@@ -74,8 +74,8 @@ module Osakana
       me.save
     end
 
-    on_lacolaco do
-      me.use
+    on_lacolaco do |passive|
+      me.use unless passive
     end
 
 
